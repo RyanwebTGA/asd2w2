@@ -134,15 +134,16 @@ local player = game.Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local originalPosition = character:WaitForChild("HumanoidRootPart").Position
 
--- Function to create an invisible, half-transparent clone of the character
+-- Function to create an invisible, half-transparent clone of the character and set the camera position
 local function createFakePlayer()
     -- Clone the character
     local clonedCharacter = character:Clone()
     
-    -- Change transparency of cloned character parts
+    -- Change transparency of cloned character parts and disable CanCollide
     for _, part in ipairs(clonedCharacter:GetChildren()) do
         if part:IsA("BasePart") or part:IsA("MeshPart") then
-            part.Transparency = 0.5 -- Set transparency to 50% for you
+            part.Transparency = 0.5 -- Set transparency to 50%
+            part.CanCollide = false -- Disable collision with parts
         end
     end
 
@@ -161,9 +162,14 @@ local function createFakePlayer()
             part.Position = originalPosition - Vector3.new(0, 50, 0) -- Move below the map
         end
     end
+    
+    -- Set the camera position to the original position
+    local camera = game.Workspace.CurrentCamera
+    camera.CameraType = Enum.CameraType.Scriptable -- Set camera to Scriptable
+    camera.CFrame = CFrame.new(originalPosition + Vector3.new(0, 5, 10), originalPosition) -- Adjust the position and focus
 end
 
--- Call the function to create fake player
+-- Call the function to create fake player and adjust camera
 createFakePlayer()
             
    end,
