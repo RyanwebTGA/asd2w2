@@ -131,12 +131,27 @@ local Toggle = MainTab:CreateToggle({
 -- LocalScript in StarterPlayerScripts
 
 local player = game.Players.LocalPlayer
-local originalCharacter = player.Character or player.CharacterAdded:Wait()
-local originalHumanoidRootPart = originalCharacter:WaitForChild("HumanoidRootPart")
-local originalPosition = originalHumanoidRootPart.Position
+local userInputService = game:GetService("UserInputService")
+local runService = game:GetService("RunService")
 
--- Function to create an invisible, half-transparent clone of the character and set the camera position
+local camera = game.Workspace.CurrentCamera
+local originalCameraCFrame
+local isRightMouseButtonDown = false
+local cameraSensitivity = 0.2 -- Adjust this value for camera sensitivity
+
+local function resetCameraToDefault()
+    camera.CameraType = Enum.CameraType.Custom
+    camera.CFrame = originalCameraCFrame -- Reset to original camera CFrame
+end
+
 local function createFakePlayer()
+    local originalCharacter = player.Character or player.CharacterAdded:Wait()
+    local originalHumanoidRootPart = originalCharacter:WaitForChild("HumanoidRootPart")
+
+    -- Save the original camera settings
+    originalCameraCFrame = camera.CFrame
+    camera.CameraType = Enum.CameraType.Scriptable
+
     -- Clone the character
     local clonedCharacter = originalCharacter:Clone()
 
@@ -144,42 +159,54 @@ local function createFakePlayer()
     for _, part in ipairs(clonedCharacter:GetDescendants()) do
         if part:IsA("BasePart") or part:IsA("MeshPart") then
             part.Transparency = 0.5 -- Set transparency to 50%
-            part.CanCollide = false -- Disable collision
+            part.CanCollide = false -- Disable collision with everything
         end
     end
 
-    -- Set the cloned character's parent to Workspace to make it visible
+    -- Set cloned character's parent to Workspace to make it visible
     clonedCharacter.Parent = game.Workspace
+    clonedCharacter:SetPrimaryPartCFrame(originalHumanoidRootPart.CFrame) -- Match the original character's position
 
-    -- Set the position of the cloned character to the original position
-    clonedCharacter:SetPrimaryPartCFrame(CFrame.new(originalPosition))
-    
-    -- Ensure proper joint setup for the cloned character
+    -- Ensure the proper joint setup for the cloned character
     clonedCharacter:MakeJoints()
 
-    -- Set the original character parts to be below the map
+    -- Move original character below the map (just for this example)
     for _, part in ipairs(originalCharacter:GetChildren()) do
         if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-            part.Position = originalPosition - Vector3.new(0, 50, 0) -- Move below the map
+            part.Position = originalHumanoidRootPart.Position - Vector3.new(0, 50, 0) -- Move below the map
             part.CanCollide = false -- Ensure original isn't colliding either
         end
     end
 
-    -- Set the camera to follow the original position and allow movement
-    local camera = game.Workspace.CurrentCamera
-    camera.CameraType = Enum.CameraType.Scriptable -- Set camera to Scriptable
+    -- Mouse movement for camera rotation
+    runService.RenderStepped:Connect(function()
+        if isRightMouseButtonDown then
+            local mouseDelta = userInputService:GetMouseDelta()
+            camera.CFrame = camera.CFrame * CFrame.Angles(0, -mouseDelta.X * cameraSensitivity, 0) -- Rotate around Y-axis
+            camera.CFrame = camera.CFrame * CFrame.Angles(mouseDelta.Y * cameraSensitivity, 0, 0) -- Rotate around X-axis
+        end
+    end)
 
-    -- This function will update the camera's position 
-    local function updateCamera()
-        -- Following the original character's position
-        camera.CFrame = CFrame.new(originalHumanoidRootPart.Position + Vector3.new(0, 5, 10), originalHumanoidRootPart.Position)
-    end
+    -- Reset the camera when the character is reset
+    player.CharacterAdded:Connect(function()
+        resetCameraToDefault()
+    end)
 
-    -- Update camera position every frame
-    game["Run Service"].RenderStepped:Connect(updateCamera)
+    -- Mouse input handling
+    userInputService.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton2 then
+            isRightMouseButtonDown = true
+        end
+    end)
+
+    userInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton2 then
+            isRightMouseButtonDown = false
+        end
+    end)
 end
 
--- Call the function to create fake player
+-- Call the function to create the fake player
 createFakePlayer()
             
    end,
