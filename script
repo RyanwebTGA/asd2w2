@@ -138,7 +138,7 @@ local Toggle = MainTab:CreateToggle({
    CurrentValue = false,
    Flag = "Toggle4", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
    Callback = function(Value)
-
+if value then
 -- LocalScript in StarterPlayerScripts
 
 local player = game.Players.LocalPlayer
@@ -181,7 +181,8 @@ local targetPosition = Vector3.new(1117, 406, 23014)  -- Change this to your des
 
 -- Teleport the character
 character:MoveTo(targetPosition)
-            
+            else
+                    enum.KeyCode == "nil"
    end,
 })
 
