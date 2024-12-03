@@ -13,7 +13,7 @@ local Window = Rayfield:CreateWindow({
    ConfigurationSaving = {
       Enabled = true,
       FolderName = true, -- Create a custom folder for your hub/game
-      FileName = "Ryan Hub"
+      FileName = "Ryan/Hub"
    },
 
    Discord = {
@@ -114,7 +114,7 @@ end,
 })
 
 local Toggle = MainTab:CreateToggle({
-   Name = "Fly",
+   Name = "Fly-comingSoon",
    CurrentValue = false,
    Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
    Callback = function(Value)
@@ -123,98 +123,46 @@ end,
 })
 
 local Toggle = MainTab:CreateToggle({
-   Name = "Invisible",
+   Name = "Invisible-comingSoon",
    CurrentValue = false,
    Flag = "Toggle3", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+
+
+            
+   end,
+})
+
+local Toggle = MainTab:CreateToggle({
+   Name = "Transmission",
+   CurrentValue = false,
+   Flag = "Toggle4", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
    Callback = function(Value)
 
 -- LocalScript in StarterPlayerScripts
 
 local player = game.Players.LocalPlayer
 local userInputService = game:GetService("UserInputService")
-local runService = game:GetService("RunService")
+local workspace = game.Workspace
 
-local camera = game.Workspace.CurrentCamera
-local originalCameraCFrame
-local isRightMouseButtonDown = false
-local cameraSensitivity = 0.2 -- Adjust this value for camera sensitivity
+local function teleportToMouse()
+    local mouse = player:GetMouse()
+    local targetPosition = mouse.Hit.p  -- Get the position where the mouse is pointing
 
-local function resetCameraToDefault()
-    camera.CameraType = Enum.CameraType.Custom
-    camera.CFrame = originalCameraCFrame -- Reset to original camera CFrame
+    -- Check if the target position is valid (not above maximum height)
+    if targetPosition.Y >= workspace.Baseplate.Position.Y then
+        player.Character:MoveTo(targetPosition) -- Move the player's character to the target position
+    else
+        print("Invalid position")
+    end
 end
 
-local function createFakePlayer()
-    local originalCharacter = player.Character or player.CharacterAdded:Wait()
-    local originalHumanoidRootPart = originalCharacter:WaitForChild("HumanoidRootPart")
-
-    -- Save the original camera settings
-    originalCameraCFrame = camera.CFrame
-    camera.CameraType = Enum.CameraType.Scriptable
-
-    -- Make original character parts non-collidable
-    for _, part in ipairs(originalCharacter:GetDescendants()) do
-        if part:IsA("BasePart") or part:IsA("MeshPart") then
-            part.CanCollide = false -- Disable collision with everything
-        end
+-- Bind teleportation to the T key
+userInputService.InputBegan:Connect(function(input, isProcessed)
+    if not isProcessed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.T then
+        teleportToMouse()
     end
-
-    -- Clone the character
-    local clonedCharacter = originalCharacter:Clone()
-
-    -- Change transparency of the cloned character parts
-    for _, part in ipairs(clonedCharacter:GetDescendants()) do
-        if part:IsA("BasePart") or part:IsA("MeshPart") then
-            part.Transparency = 0.5 -- Set transparency to 50%
-            part.CanCollide = false -- Disable collision with everything
-        end
-    end
-
-    -- Set cloned character's parent to Workspace to make it visible
-    clonedCharacter.Parent = game.Workspace
-    clonedCharacter:SetPrimaryPartCFrame(originalHumanoidRootPart.CFrame) -- Match the original character's position
-
-    -- Ensure the proper joint setup for the cloned character
-    clonedCharacter:MakeJoints()
-
-    -- Move original character below the map (just for this example)
-    for _, part in ipairs(originalCharacter:GetChildren()) do
-        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-            part.Position = originalHumanoidRootPart.Position - Vector3.new(0, 50, 0) -- Move below the map
-            part.CanCollide = false -- Ensure original isn't colliding either
-        end
-    end
-
-    -- Mouse movement for camera rotation
-    runService.RenderStepped:Connect(function()
-        if isRightMouseButtonDown then
-            local mouseDelta = userInputService:GetMouseDelta()
-            camera.CFrame = camera.CFrame * CFrame.Angles(0, -mouseDelta.X * cameraSensitivity, 0) -- Rotate around Y-axis
-            camera.CFrame = camera.CFrame * CFrame.Angles(mouseDelta.Y * cameraSensitivity, 0, 0) -- Rotate around X-axis
-        end
-    end)
-
-    -- Reset the camera when the character is reset
-    player.CharacterAdded:Connect(function()
-        resetCameraToDefault()
-    end)
-
-    -- Mouse input handling
-    userInputService.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton2 then
-            isRightMouseButtonDown = true
-        end
-    end)
-
-    userInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton2 then
-            isRightMouseButtonDown = false
-        end
-    end)
-end
-
--- Call the function to create the fake player
-createFakePlayer()
+end)
             
    end,
 })
