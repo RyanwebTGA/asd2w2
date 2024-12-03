@@ -152,10 +152,17 @@ local function createFakePlayer()
     originalCameraCFrame = camera.CFrame
     camera.CameraType = Enum.CameraType.Scriptable
 
+    -- Make original character parts non-collidable
+    for _, part in ipairs(originalCharacter:GetDescendants()) do
+        if part:IsA("BasePart") or part:IsA("MeshPart") then
+            part.CanCollide = false -- Disable collision with everything
+        end
+    end
+
     -- Clone the character
     local clonedCharacter = originalCharacter:Clone()
 
-    -- Change transparency of the cloned character parts and disable CanCollide
+    -- Change transparency of the cloned character parts
     for _, part in ipairs(clonedCharacter:GetDescendants()) do
         if part:IsA("BasePart") or part:IsA("MeshPart") then
             part.Transparency = 0.5 -- Set transparency to 50%
