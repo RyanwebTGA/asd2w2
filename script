@@ -167,7 +167,23 @@ end)
    end,
 })
 
-local secondTab = Window:CreateTab("Areas", nil) -- Title, Image
+local secondTab = Window:CreateTab("Teleport", nil) -- Title, Image
+local Section = secondTab:CreateSection("Areas")
+
+local Button = secondTab:CreateButton({
+   Name = "Baseplate",
+   Callback = function()
+            
+local player = game.Players.LocalPlayer
+local character = player.Character or player.Character
+
+-- Define the target position as a Vector3
+local targetPosition = Vector3.new(1117, 406, 23014)  -- Change this to your desired coordinates
+
+-- Teleport the character
+character:MoveTo(targetPosition)
+   end,
+})
 
 local Button = secondTab:CreateButton({
    Name = "atomic room",
