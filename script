@@ -138,11 +138,10 @@ local Toggle = MainTab:CreateToggle({
    CurrentValue = false,
    Flag = "Toggle4", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
    Callback = function(Value)
-if value then
--- LocalScript in StarterPlayerScripts
 
 local player = game.Players.LocalPlayer
 local userInputService = game:GetService("UserInputService")
+local canTeleport = replicatedStorage:WaitForChild("CanTeleport")
 
 local function teleportToMouse()
     local mouse = player:GetMouse()
@@ -159,30 +158,13 @@ end
 -- Bind teleportation to the T key
 userInputService.InputBegan:Connect(function(input, isProcessed)
     if not isProcessed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.T then
-        teleportToMouse()
+        -- Check the value of CanTeleport
+        if Value then
+            teleportToMouse()
+        end
     end
 end)
             
-   end,
-})
-
-local secondTab = Window:CreateTab("Teleport", nil) -- Title, Image
-local Section = secondTab:CreateSection("Areas")
-
-local Button = secondTab:CreateButton({
-   Name = "Baseplate",
-   Callback = function()
-            
-local player = game.Players.LocalPlayer
-local character = player.Character or player.Character
-
--- Define the target position as a Vector3
-local targetPosition = Vector3.new(1117, 406, 23014)  -- Change this to your desired coordinates
-
--- Teleport the character
-character:MoveTo(targetPosition)
-            else
-                    enum.KeyCode == "nil"
    end,
 })
 
