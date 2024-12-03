@@ -144,16 +144,28 @@ local Toggle = MainTab:CreateToggle({
 local player = game.Players.LocalPlayer
 local userInputService = game:GetService("UserInputService")
 local workspace = game.Workspace
+local character = player.Character or player.CharacterAdded:Wait()
 
 local function teleportToMouse()
     local mouse = player:GetMouse()
-    local targetPosition = mouse.Hit.p  -- Get the position where the mouse is pointing
+    local targetPosition = mouse.Hit.p -- Get the position where the mouse is pointing
 
-    -- Check if the target position is valid (not above maximum height)
-    if targetPosition.Y >= workspace.Baseplate.Position.Y then
-        player.Character:MoveTo(targetPosition) -- Move the player's character to the target position
+    -- Cast a ray downward to find the ground
+    local rayOrigin = mouse.Hit.Position + Vector3.new(0, 10, 0) -- Start a bit above the mouse hit
+    local rayDirection = Vector3.new(0, -20, 0) -- Cast downwards
+
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {character} -- Prevent hitting the player's own character parts
+    raycastParams.IgnoreWater = true -- If there's water, ignore it
+
+    local raycastResult = workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+
+    if raycastResult then
+        local hitPosition = raycastResult.Position
+        -- Teleport the player to the hit position
+        player.Character:MoveTo(hitPosition)
     else
-        print("Invalid position")
+        print("No valid surface found below the mouse.")
     end
 end
 
