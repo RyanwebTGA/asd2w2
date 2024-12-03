@@ -131,45 +131,55 @@ local Toggle = MainTab:CreateToggle({
 -- LocalScript in StarterPlayerScripts
 
 local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local originalPosition = character:WaitForChild("HumanoidRootPart").Position
+local originalCharacter = player.Character or player.CharacterAdded:Wait()
+local originalHumanoidRootPart = originalCharacter:WaitForChild("HumanoidRootPart")
+local originalPosition = originalHumanoidRootPart.Position
 
 -- Function to create an invisible, half-transparent clone of the character and set the camera position
 local function createFakePlayer()
     -- Clone the character
-    local clonedCharacter = character:Clone()
-    
-    -- Change transparency of cloned character parts and disable CanCollide
-    for _, part in ipairs(clonedCharacter:GetChildren()) do
+    local clonedCharacter = originalCharacter:Clone()
+
+    -- Change transparency of the cloned character parts and disable CanCollide
+    for _, part in ipairs(clonedCharacter:GetDescendants()) do
         if part:IsA("BasePart") or part:IsA("MeshPart") then
             part.Transparency = 0.5 -- Set transparency to 50%
-            part.CanCollide = false -- Disable collision with parts
+            part.CanCollide = false -- Disable collision
         end
     end
 
     -- Set the cloned character's parent to Workspace to make it visible
     clonedCharacter.Parent = game.Workspace
-    
+
     -- Set the position of the cloned character to the original position
     clonedCharacter:SetPrimaryPartCFrame(CFrame.new(originalPosition))
     
     -- Ensure proper joint setup for the cloned character
     clonedCharacter:MakeJoints()
-    
+
     -- Set the original character parts to be below the map
-    for _, part in ipairs(character:GetChildren()) do
+    for _, part in ipairs(originalCharacter:GetChildren()) do
         if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
             part.Position = originalPosition - Vector3.new(0, 50, 0) -- Move below the map
+            part.CanCollide = false -- Ensure original isn't colliding either
         end
     end
-    
-    -- Set the camera position to the original position
+
+    -- Set the camera to follow the original position and allow movement
     local camera = game.Workspace.CurrentCamera
     camera.CameraType = Enum.CameraType.Scriptable -- Set camera to Scriptable
-    camera.CFrame = CFrame.new(originalPosition + Vector3.new(0, 5, 10), originalPosition) -- Adjust the position and focus
+
+    -- This function will update the camera's position 
+    local function updateCamera()
+        -- Following the original character's position
+        camera.CFrame = CFrame.new(originalHumanoidRootPart.Position + Vector3.new(0, 5, 10), originalHumanoidRootPart.Position)
+    end
+
+    -- Update camera position every frame
+    game["Run Service"].RenderStepped:Connect(updateCamera)
 end
 
--- Call the function to create fake player and adjust camera
+-- Call the function to create fake player
 createFakePlayer()
             
    end,
