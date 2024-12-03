@@ -141,7 +141,6 @@ local Toggle = MainTab:CreateToggle({
 
 local player = game.Players.LocalPlayer
 local userInputService = game:GetService("UserInputService")
-local canTeleport = replicatedStorage:WaitForChild("CanTeleport")
 
 local function teleportToMouse()
     local mouse = player:GetMouse()
