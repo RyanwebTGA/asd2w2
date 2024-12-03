@@ -122,6 +122,53 @@ local Toggle = MainTab:CreateToggle({
 end,
 })
 
+local Toggle = Tab:CreateToggle({
+   Name = "Invisible",
+   CurrentValue = false,
+   Flag = "Toggle3", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+
+-- LocalScript in StarterPlayerScripts
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local originalPosition = character:WaitForChild("HumanoidRootPart").Position
+
+-- Function to create an invisible, half-transparent clone of the character
+local function createFakePlayer()
+    -- Clone the character
+    local clonedCharacter = character:Clone()
+    
+    -- Change transparency of cloned character parts
+    for _, part in ipairs(clonedCharacter:GetChildren()) do
+        if part:IsA("BasePart") or part:IsA("MeshPart") then
+            part.Transparency = 0.5 -- Set transparency to 50% for you
+        end
+    end
+
+    -- Set the cloned character's parent to Workspace to make it visible
+    clonedCharacter.Parent = game.Workspace
+    
+    -- Set the position of the cloned character to the original position
+    clonedCharacter:SetPrimaryPartCFrame(CFrame.new(originalPosition))
+    
+    -- Ensure proper joint setup for the cloned character
+    clonedCharacter:MakeJoints()
+    
+    -- Set the original character parts to be below the map
+    for _, part in ipairs(character:GetChildren()) do
+        if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+            part.Position = originalPosition - Vector3.new(0, 50, 0) -- Move below the map
+        end
+    end
+end
+
+-- Call the function to create fake player
+createFakePlayer()
+            
+   end,
+})
+
 local secondTab = Window:CreateTab("Teleport", nil) -- Title, Image
 local Section = secondTab:CreateSection("Areas")
 
