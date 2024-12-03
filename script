@@ -1,1 +1,239 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
+local Window = Rayfield:CreateWindow({
+   Name = "TSB script",
+   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "Ryan Hub",
+   LoadingSubtitle = "by Ryan",
+   Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = true, -- Create a custom folder for your hub/game
+      FileName = "Ryan/Hub"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+
+   KeySystem = false, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Ryan Hub",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
+
+local MainTab = Window:CreateTab("Character", nil) -- Title, Image
+local Section = MainTab:CreateSection("LocalPlayer")
+
+local Slider = MainTab:CreateSlider({
+   Name = "WalkSpeed",
+   Range = {0, 300},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "Slider1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+            while true do
+                wait(0.1)
+   game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
+end
+   end,
+})
+
+local Slider = MainTab:CreateSlider({
+   Name = "Jump Power",
+   Range = {0, 300},
+   Increment = 1,
+   Suffix = "Jump Power",
+   CurrentValue = 50,
+   Flag = "Slider2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+            while true do
+    wait(0.1)
+      game.Players.LocalPlayer.Character.Humanoid.JumpPower = (Value)
+end
+   end,
+})
+
+local Toggle = MainTab:CreateToggle({
+   Name = "NoClip",
+   CurrentValue = false,
+   Flag = "Toggle1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+           noclipActive = Value -- Set the noclip state based on the toggle value
+    
+    if noclipActive then
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+
+        -- Function to enable noclip
+        local function enableNoclip()
+            while noclipActive do -- Check if noclip is active
+                -- Disable collisions for all parts in the character
+                for _, part in ipairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+                wait(0.1) -- Adjust the interval to your liking
+            end
+        end
+
+        -- Start the noclip function
+        enableNoclip()
+                
+    else
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+
+        -- Function to disable noclip
+        local function disableNoclip()
+            for _, part in ipairs(character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+        end
+
+        -- Call the disable noclip function
+        disableNoclip()
+    end
+end,
+})
+
+local Toggle = MainTab:CreateToggle({
+   Name = "Fly-comingSoon",
+   CurrentValue = false,
+   Flag = "Toggle2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+
+end,
+})
+
+local Toggle = MainTab:CreateToggle({
+   Name = "Invisible-comingSoon",
+   CurrentValue = false,
+   Flag = "Toggle3", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+
+
+            
+   end,
+})
+
+local Toggle = MainTab:CreateToggle({
+   Name = "Transmission",
+   CurrentValue = false,
+   Flag = "Toggle4", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+
+local player = game.Players.LocalPlayer
+local userInputService = game:GetService("UserInputService")
+
+local function teleportToMouse()
+    local mouse = player:GetMouse()
+    
+    -- Get the position where the mouse is pointing
+    local targetPosition = mouse.Hit.p 
+
+    -- Teleport the player's character to the target position
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character:SetPrimaryPartCFrame(CFrame.new(targetPosition))
+    end
+end
+
+-- Bind teleportation to the T key
+userInputService.InputBegan:Connect(function(input, isProcessed)
+    if not isProcessed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.T then
+        -- Check the value of CanTeleport
+        if Value then
+            teleportToMouse()
+        end
+    end
+end)
+            
+   end,
+})
+
+local Button = secondTab:CreateButton({
+   Name = "atomic room",
+   Callback = function()
+            
+local player = game.Players.LocalPlayer
+local character = player.Character or player.Character
+
+-- Define the target position as a Vector3
+local targetPosition = Vector3.new(1065, 132, 23005)  -- Change this to your desired coordinates
+
+-- Teleport the character
+character:MoveTo(targetPosition)
+            
+   end,
+})
+
+local Button = secondTab:CreateButton({
+   Name = "death counter",
+   Callback = function()
+            
+local player = game.Players.LocalPlayer
+local character = player.Character or player.Character
+
+-- Define the target position as a Vector3
+local targetPosition = Vector3.new(-62, 29, 20342)  -- Change this to your desired coordinates
+
+-- Teleport the character
+character:MoveTo(targetPosition)
+            
+   end,
+})
+
+local Button = secondTab:CreateButton({
+   Name = "mountain",
+   Callback = function()
+            
+local player = game.Players.LocalPlayer
+local character = player.Character or player.Character
+
+-- Define the target position as a Vector3
+local targetPosition = Vector3.new(-12, 653, -390)  -- Change this to your desired coordinates
+
+-- Teleport the character
+character:MoveTo(targetPosition)
+            
+   end,
+})
+
+local Button = secondTab:CreateButton({
+   Name = "map",
+   Callback = function()
+            
+local player = game.Players.LocalPlayer
+local character = player.Character or player.Character
+
+-- Define the target position as a Vector3
+local targetPosition = Vector3.new(-45, 441, -136)  -- Change this to your desired coordinates
+
+-- Teleport the character
+character:MoveTo(targetPosition)
+            
+   end,
+})
+
+Rayfield:Notify({
+   Title = "Succesfully Loaded",
+   Content = "Thx for using Ryan Hub",
+   Duration = 6.5,
+   Image = nil,
+})
