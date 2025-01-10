@@ -1,3 +1,5 @@
+if game.GameId == 10449761463 then
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
@@ -255,3 +257,10 @@ Rayfield:Notify({
    Duration = 6.5,
    Image = nil,
 })
+
+else 
+Rayfield:Notify({
+   Title = "Wrong game",
+   Content = "use it in The strongest battlegrounds",
+   Duration = 6.5,
+   Image = nil,
