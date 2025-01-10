@@ -1,5 +1,6 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+if game.GameId == 10449761463 then
 
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "TSB script",
    Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
@@ -255,3 +256,7 @@ Rayfield:Notify({
    Duration = 6.5,
    Image = nil,
 })
+
+else
+  game:GetService("StarterGui"):SetCore("SendNotification", {Title = "(Ryan Hub)", Text = "This game is not supported", Duration = 10})
+end
