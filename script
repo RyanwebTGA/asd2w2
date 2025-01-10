@@ -1,3 +1,8 @@
+if game.GameId == 10449761463 then
+else
+  game:GetService("StarterGui"):SetCore("SendNotification", {Title = "(Ryan Hub)", Text = "This game is not supported", Duration = 10})
+
+end
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
