@@ -212,7 +212,11 @@ def main():
 
     # ------------------------------------------------------------ roles
     print("\nRoles")
-    role_ids = {"@everyone": gid, "@bot": bot_role["id"]}
+    # other bots' roles (Bloxlink, Carl-bot, ...) go where the layout lists "@bots"
+    other_bots = sorted((r for r in roles if r["managed"] and r["id"] != bot_role["id"]
+                         and (r.get("tags") or {}).get("bot_id")), key=rank, reverse=True)
+    has_bots_slot = any(spec["name"] == "@bots" for spec in layout["roles"])
+    role_ids = {"@everyone": gid, "@bot": bot_role["id"], "@bots": [r["id"] for r in other_bots]}
     claimed_roles = set()
     order = []          # layout roles top -> bottom (ids, "new:..." in a dry run)
     blocked = []        # existing roles the bot can't touch because they're above it
@@ -226,8 +230,13 @@ def main():
                 return r
         return None
 
+    if has_bots_slot:
+        blocked += [r["name"] for r in other_bots if rank(r) >= rank(bot_top)]
     found_roles = []
     for spec in layout["roles"]:
+        if spec["name"] == "@bots":
+            found_roles.append(None)
+            continue
         found = find_role([spec["name"]] + spec.get("match", []))
         if found:
             claimed_roles.add(found["id"])
@@ -244,6 +253,9 @@ def main():
 
     for spec, found in zip(layout["roles"], found_roles):
         name = spec["name"]
+        if name == "@bots":
+            order.extend(r["id"] for r in other_bots)
+            continue
         if spec.get("keep"):
             if not found:
                 sys.exit("Role %r is marked keep but doesn't exist on the server." % name)
@@ -298,6 +310,8 @@ def main():
     by_rank = sorted(existing, key=lambda rid: rank(current[rid]), reverse=True)
     if len(existing) != len(order) or by_rank != existing:
         names = [current[rid]["name"] if rid in current else rid[4:] for rid in order]
+        if has_bots_slot and not other_bots:
+            names.insert(next(i for i, sp in enumerate(layout["roles"]) if sp["name"] == "@bots"), "(other bots)")
         change("order roles: %s" % " > ".join(names))
         if apply:
             # Renumber every role below the bot: layout roles first (in layout order),
@@ -308,8 +322,11 @@ def main():
             others = sorted((r for r in below if r["id"] not in order), key=rank, reverse=True)
             # other bots' roles (verification bots etc.) stay above the layout roles so they
             # can still hand them out; any other unlisted roles go underneath
-            sequence = ([r["id"] for r in others if r["managed"]] + order
-                        + [r["id"] for r in others if not r["managed"]])
+            if has_bots_slot:
+                sequence = order + [r["id"] for r in others]
+            else:
+                sequence = ([r["id"] for r in others if r["managed"]] + order
+                            + [r["id"] for r in others if not r["managed"]])
             n = len(sequence)
             payload = [{"id": rid, "position": n - i} for i, rid in enumerate(sequence)]
             if top["position"] <= n:
@@ -341,8 +358,10 @@ def main():
         for key, value in (spec_ow or {}).items():
             if key not in role_ids:
                 sys.exit("Overwrite for unknown role %r (add it to roles, or use @everyone / @bot)." % key)
-            out[role_ids[key]] = (resolve_perms(value.get("allow", []), presets),
-                                  resolve_perms(value.get("deny", []), presets))
+            ids = role_ids[key] if isinstance(role_ids[key], list) else [role_ids[key]]
+            for rid in ids:
+                out[rid] = (resolve_perms(value.get("allow", []), presets),
+                            resolve_perms(value.get("deny", []), presets))
         return out
 
     def merge(base, extra):
@@ -493,9 +512,8 @@ def main():
             api.call("PATCH", "/guilds/%s" % gid, body)
 
     # ------------------------------------------------------------ report
-    extra_roles = [r["name"] for r in roles
-                   if r["id"] not in claimed_roles and r["id"] != gid and not r["managed"]
-                   and r["id"] not in role_ids.values()]
+    known = set(order) | {gid, bot_role["id"]}
+    extra_roles = [r["name"] for r in roles if r["id"] not in known and not r["managed"]]
     extra_channels = [label(c) for c in channels if c["id"] not in claimed]
     if extra_roles:
         print("\nRoles not in the layout (left alone): " + ", ".join(extra_roles))

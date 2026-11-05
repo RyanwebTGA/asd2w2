@@ -30,6 +30,7 @@
     { "name": "Creator",         "keep": true },
     { "name": "Administrator",   "keep": true },
     { "name": "Moderator",       "color": "#E67E22", "hoist": true,  "mentionable": true,  "permissions": ["@moderator"] },
+    { "name": "@bots" },
     { "name": "Developer",       "color": "#9B59B6", "hoist": true,  "mentionable": false, "permissions": ["@member"] },
     { "name": "Content Creator", "color": "#F47FFF", "hoist": true,  "mentionable": false, "permissions": ["@member"] },
     { "name": "Tester",          "color": "#1ABC9C", "hoist": true,  "mentionable": false, "permissions": ["@member"] },
@@ -44,11 +45,13 @@
       "name": "📌 INFORMATION",
       "overwrites": {
         "@everyone":     { "deny":  ["@no_posting"] },
-        "Administrator": { "allow": ["@post", "MENTION_EVERYONE"] }
+        "Administrator": { "allow": ["@post", "MENTION_EVERYONE"] },
+        "@bots":         { "allow": ["VIEW_CHANNEL", "@post"] }
       },
       "channels": [
         { "name": "👋・welcome",       "type": "text",         "topic": "Welcome to Untitled Isekai! Read the rules, then jump into the game." },
         { "name": "📜・rules",         "type": "text",         "match": ["rules"] },
+        { "name": "🎭・get-roles",     "type": "text",         "topic": "Pick roles to get pinged for updates, events and giveaways." },
         { "name": "📢・announcements", "type": "announcement", "topic": "Important server and game news." },
         { "name": "🎮・game-updates",  "type": "announcement", "topic": "Patch notes, new worlds, new skills and balance changes.",
           "overwrites": { "Developer": { "allow": ["@post", "MENTION_EVERYONE"] } } },
@@ -65,7 +68,6 @@
       "channels": [
         { "name": "💬・general",       "type": "text", "match": ["general"] },
         { "name": "🖼️・media",         "type": "text", "topic": "Screenshots, clips and art." },
-        { "name": "😂・memes",         "type": "text", "topic": "Isekai and game memes." },
         { "name": "🎥・content-share", "type": "text", "topic": "Videos and streams from our Content Creators.",
           "overwrites": {
             "@everyone":       { "deny":  ["SEND_MESSAGES", "CREATE_PUBLIC_THREADS", "CREATE_PRIVATE_THREADS", "SEND_POLLS"] },
@@ -77,7 +79,6 @@
     {
       "name": "⚔️ GAME",
       "channels": [
-        { "name": "❓・game-help",    "type": "text",  "topic": "Questions about the game? Ask here." },
         { "name": "💡・suggestions",  "type": "forum", "topic": "One idea per post. Search first so we don't get duplicates.",
           "overwrites": { "Developer": { "allow": ["MANAGE_THREADS"] } },
           "tags": [
@@ -93,10 +94,19 @@
             { "name": "Known Issue",     "emoji": "📌", "moderated": true },
             { "name": "Fixed",           "emoji": "✅", "moderated": true },
             { "name": "Can't Reproduce", "emoji": "❔", "moderated": true }
-          ] },
-        { "name": "🤝・trading",      "type": "text",  "topic": "Trade items and gear. Scamming = ban.", "slowmode": 30 },
-        { "name": "⚔️・party-finder", "type": "text",  "topic": "Looking for a party? Post your level and what you're doing.", "slowmode": 10 },
-        { "name": "🏆・showcase",     "type": "text",  "topic": "Show off your characters, builds and loot." }
+          ] }
+      ]
+    },
+    {
+      "name": "🎫 SUPPORT",
+      "overwrites": {
+        "@everyone":     { "deny":  ["@no_posting"] },
+        "Moderator":     { "allow": ["@post"] },
+        "Administrator": { "allow": ["@post"] },
+        "@bots":         { "allow": ["VIEW_CHANNEL", "@post", "MANAGE_CHANNELS"] }
+      },
+      "channels": [
+        { "name": "🎫・open-a-ticket", "type": "text", "topic": "Need staff? Click the button below to open a private ticket." }
       ]
     },
     {
@@ -144,7 +154,8 @@
         "@everyone":     { "deny":  ["VIEW_CHANNEL"] },
         "Moderator":     { "allow": ["VIEW_CHANNEL"] },
         "Administrator": { "allow": ["VIEW_CHANNEL"] },
-        "@bot":          { "allow": ["VIEW_CHANNEL"] }
+        "@bot":          { "allow": ["VIEW_CHANNEL"] },
+        "@bots":         { "allow": ["VIEW_CHANNEL", "@post"] }
       },
       "channels": [
         { "name": "🛡️・staff-chat",     "type": "text", "topic": "Staff discussion." },
