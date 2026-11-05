@@ -126,13 +126,15 @@
       "name": "🛠️ DEVELOPMENT",
       "overwrites": {
         "@everyone":     { "deny":  ["VIEW_CHANNEL"] },
-        "Developer":     { "allow": ["VIEW_CHANNEL", "PIN_MESSAGES"] },
+        "Developer":     { "allow": ["VIEW_CHANNEL"] },
         "Administrator": { "allow": ["VIEW_CHANNEL"] },
         "@bot":          { "allow": ["VIEW_CHANNEL"] }
       },
       "channels": [
-        { "name": "💻・dev-chat",  "type": "text",  "topic": "Scripting, building and game development." },
-        { "name": "💡・dev-ideas", "type": "text",  "topic": "Plans and ideas for future updates." },
+        { "name": "💻・dev-chat",  "type": "text",  "topic": "Scripting, building and game development.",
+          "overwrites": { "Developer": { "allow": ["PIN_MESSAGES"] } } },
+        { "name": "💡・dev-ideas", "type": "text",  "topic": "Plans and ideas for future updates.",
+          "overwrites": { "Developer": { "allow": ["PIN_MESSAGES"] } } },
         { "name": "🛠️ Dev Voice",  "type": "voice" }
       ]
     },

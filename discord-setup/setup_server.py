@@ -94,11 +94,18 @@ class Discord:
                         wait = 2.0
                     time.sleep(wait + 0.25)
                     continue
-                if err.code >= 500 and attempt < 4:
+                # A POST that hit a 5xx may still have gone through, so don't resend it
+                # (re-running the script picks up whatever was created).
+                if err.code >= 500 and method != "POST" and attempt < 4:
                     time.sleep(2 ** attempt)
                     continue
                 raise DiscordError("%s %s failed: HTTP %s %s" % (
                     method, path, err.code, raw.decode("utf-8", "replace")))
+            except (urllib.error.URLError, OSError) as err:
+                if method == "GET" and attempt < 4:
+                    time.sleep(2 ** attempt)
+                    continue
+                raise DiscordError("%s %s failed: %s (run the script again to continue)" % (method, path, err))
         raise DiscordError("%s %s: still rate limited after several retries" % (method, path))
 
 
@@ -198,6 +205,10 @@ def main():
         sys.exit("Couldn't find the bot's role. Re-invite the bot with the invite link.")
     bot_admin = any(int(roles_by_id[rid]["permissions"]) >> PERMISSIONS["ADMINISTRATOR"] & 1
                     for rid in member["roles"] if rid in roles_by_id)
+    if apply and not bot_admin:
+        sys.exit("Stopped before changing anything: give the bot's role (%s) Administrator for the run. "
+                 "Without it Discord hides private channels from the bot and refuses some permissions."
+                 % bot_top["name"])
 
     # ------------------------------------------------------------ roles
     print("\nRoles")
@@ -295,13 +306,25 @@ def main():
             top = next(r for r in roles if r["id"] == bot_top["id"])
             below = [r for r in roles if r["id"] != gid and rank(r) < rank(top)]
             others = sorted((r for r in below if r["id"] not in order), key=rank, reverse=True)
-            sequence = order + [r["id"] for r in others]
-            if top["position"] <= len(sequence):
-                sys.exit("Stopped: Discord hasn't moved the bot's role up yet. In Server Settings > Roles, "
-                         "drag %s to the very top again, then run this again." % top["name"])
+            # other bots' roles (verification bots etc.) stay above the layout roles so they
+            # can still hand them out; any other unlisted roles go underneath
+            sequence = ([r["id"] for r in others if r["managed"]] + order
+                        + [r["id"] for r in others if not r["managed"]])
             n = len(sequence)
-            api.call("PATCH", "/guilds/%s/roles" % gid,
-                     [{"id": rid, "position": n - i} for i, rid in enumerate(sequence)])
+            payload = [{"id": rid, "position": n - i} for i, rid in enumerate(sequence)]
+            if top["position"] <= n:
+                # Discord stacked new roles on the same position instead of shifting the
+                # bot's role up. Try renumbering with the bot's role kept on top.
+                above = sorted((r for r in roles if r["id"] != gid and rank(r) >= rank(top)), key=rank)
+                payload += [{"id": r["id"], "position": n + 1 + i} for i, r in enumerate(above)]
+                try:
+                    api.call("PATCH", "/guilds/%s/roles" % gid, payload)
+                except DiscordError as err:
+                    sys.exit("Stopped: Discord won't let the bot renumber roles (%s). In Server Settings > "
+                             "Roles, drag any role (for example Moderator) to a new spot and save, so "
+                             "Discord renumbers them, then run this again." % err)
+            else:
+                api.call("PATCH", "/guilds/%s/roles" % gid, payload)
             roles = api.call("GET", "/guilds/%s/roles" % gid)
             live = {r["id"]: r for r in roles}
             if sorted(order, key=lambda rid: rank(live[rid]), reverse=True) != order:
