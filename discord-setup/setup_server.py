@@ -4,9 +4,9 @@
     python3 setup_server.py            # dry run: only shows what would change
     python3 setup_server.py --apply    # makes the changes
 
-The bot token is read from the DISCORD_TOKEN environment variable. The bot
-needs Administrator (or Manage Roles + Manage Channels + Manage Server), and its
-role must sit above every role listed in the layout.
+The bot token is read from the DISCORD_TOKEN environment variable. Give the bot
+Administrator for the run (Discord only lets a bot grant permissions it has
+itself), and drag its role above every role listed in the layout.
 
 Running it again is safe: anything that already matches the layout is left
 alone, so it only creates or edits what is missing or different. Nothing is
@@ -57,6 +57,7 @@ TEXT_LIKE = {0, 5, 15, 16}       # names are lowercase-with-dashes; listed above
 VOICE_LIKE = {2, 13}
 CONVERTIBLE = {0, 5}             # Discord can switch text <-> announcement in place
 SPEC_MATCHES = {0: {0, 5}, 5: {0, 5}, 2: {2}, 4: {4}, 15: {15}}
+SUPPRESS_JOIN_NOTIFICATION_REPLIES = 1 << 3   # guild system_channel_flags
 
 
 class DiscordError(Exception):
@@ -288,9 +289,23 @@ def main():
         names = [current[rid]["name"] if rid in current else rid[4:] for rid in order]
         change("order roles: %s" % " > ".join(names))
         if apply:
-            n = len(order)
+            # Renumber every role below the bot: layout roles first (in layout order),
+            # then any other roles in their current order. A bot can only move roles
+            # below its own highest role, so all positions must stay under it.
+            top = next(r for r in roles if r["id"] == bot_top["id"])
+            below = [r for r in roles if r["id"] != gid and rank(r) < rank(top)]
+            others = sorted((r for r in below if r["id"] not in order), key=rank, reverse=True)
+            sequence = order + [r["id"] for r in others]
+            if top["position"] <= len(sequence):
+                sys.exit("Stopped: Discord hasn't moved the bot's role up yet. In Server Settings > Roles, "
+                         "drag %s to the very top again, then run this again." % top["name"])
+            n = len(sequence)
             api.call("PATCH", "/guilds/%s/roles" % gid,
-                     [{"id": rid, "position": n - i} for i, rid in enumerate(order)])
+                     [{"id": rid, "position": n - i} for i, rid in enumerate(sequence)])
+            roles = api.call("GET", "/guilds/%s/roles" % gid)
+            live = {r["id"]: r for r in roles}
+            if sorted(order, key=lambda rid: rank(live[rid]), reverse=True) != order:
+                warnings.append("Discord didn't keep the role order exactly; run the script again to retry.")
 
     # ------------------------------------------------------------ channels
     print("\nChannels")
@@ -442,10 +457,17 @@ def main():
         sid = name_to_id.get(system)
         if sid is None:
             sys.exit("system_channel %r isn't a channel in the layout." % system)
+        body = {}
         if guild.get("system_channel_id") != sid:
+            body["system_channel_id"] = sid
             change("send join messages to %s" % system)
-            if apply:
-                api.call("PATCH", "/guilds/%s" % gid, {"system_channel_id": sid})
+        if layout.get("hide_join_wave_button"):
+            flags = guild.get("system_channel_flags", 0)
+            if not flags & SUPPRESS_JOIN_NOTIFICATION_REPLIES:
+                body["system_channel_flags"] = flags | SUPPRESS_JOIN_NOTIFICATION_REPLIES
+                change("hide the 'Wave to say hi' button on join messages")
+        if body and apply and not sid.startswith("new:"):
+            api.call("PATCH", "/guilds/%s" % gid, body)
 
     # ------------------------------------------------------------ report
     extra_roles = [r["name"] for r in roles

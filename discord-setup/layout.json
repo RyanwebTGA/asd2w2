@@ -50,7 +50,8 @@
         { "name": "👋・welcome",       "type": "text",         "topic": "Welcome to Untitled Isekai! Read the rules, then jump into the game." },
         { "name": "📜・rules",         "type": "text",         "match": ["rules"] },
         { "name": "📢・announcements", "type": "announcement", "topic": "Important server and game news." },
-        { "name": "🎮・game-updates",  "type": "announcement", "topic": "Patch notes, new worlds, new skills and balance changes." },
+        { "name": "🎮・game-updates",  "type": "announcement", "topic": "Patch notes, new worlds, new skills and balance changes.",
+          "overwrites": { "Developer": { "allow": ["@post", "MENTION_EVERYONE"] } } },
         { "name": "🔗・links",         "type": "text",         "topic": "Game link, Roblox group and socials." },
         { "name": "🎉・events",        "type": "text",         "topic": "Upcoming in-game and server events.",
           "overwrites": { "Moderator": { "allow": ["@post", "MENTION_EVERYONE"] } } },
@@ -67,9 +68,9 @@
         { "name": "😂・memes",         "type": "text", "topic": "Isekai and game memes." },
         { "name": "🎥・content-share", "type": "text", "topic": "Videos and streams from our Content Creators.",
           "overwrites": {
-            "@everyone":       { "deny":  ["SEND_MESSAGES"] },
-            "Content Creator": { "allow": ["SEND_MESSAGES", "EMBED_LINKS", "ATTACH_FILES"] },
-            "Administrator":   { "allow": ["SEND_MESSAGES", "EMBED_LINKS", "ATTACH_FILES"] }
+            "@everyone":       { "deny":  ["SEND_MESSAGES", "CREATE_PUBLIC_THREADS", "CREATE_PRIVATE_THREADS", "SEND_POLLS"] },
+            "Content Creator": { "allow": ["@post"] },
+            "Administrator":   { "allow": ["@post"] }
           } }
       ]
     },
@@ -78,6 +79,7 @@
       "channels": [
         { "name": "❓・game-help",    "type": "text",  "topic": "Questions about the game? Ask here." },
         { "name": "💡・suggestions",  "type": "forum", "topic": "One idea per post. Search first so we don't get duplicates.",
+          "overwrites": { "Developer": { "allow": ["MANAGE_THREADS"] } },
           "tags": [
             { "name": "Idea",     "emoji": "💡" },
             { "name": "Planned",  "emoji": "📅", "moderated": true },
@@ -85,6 +87,7 @@
             { "name": "Denied",   "emoji": "❌", "moderated": true }
           ] },
         { "name": "🐛・bug-reports",  "type": "forum", "topic": "One bug per post: what happened, how to make it happen again, and a screenshot or clip.",
+          "overwrites": { "Developer": { "allow": ["MANAGE_THREADS"] } },
           "tags": [
             { "name": "Bug",             "emoji": "🐛" },
             { "name": "Known Issue",     "emoji": "📌", "moderated": true },
@@ -150,5 +153,6 @@
     }
   ],
 
-  "system_channel": "👋・welcome"
+  "system_channel": "👋・welcome",
+  "hide_join_wave_button": true
 }
