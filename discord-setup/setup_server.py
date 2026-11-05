@@ -18,6 +18,7 @@ Standard library only (Python 3.8+).
 import argparse
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -108,6 +109,14 @@ class Discord:
                 raise DiscordError("%s %s failed: %s (run the script again to continue)" % (method, path, err))
         raise DiscordError("%s %s: still rate limited after several retries" % (method, path))
 
+    def get_or_none(self, path):
+        try:
+            return self.call("GET", path)
+        except DiscordError as err:
+            if "HTTP 404" in str(err):
+                return None
+            raise
+
 
 # ---------------------------------------------------------------- helpers
 
@@ -154,6 +163,40 @@ def norm(name, ctype=None):
 def rank(role):
     """Sort key: higher = higher in the role list. Equal positions: the older (lower id) role wins."""
     return (role["position"], -int(role["id"]))
+
+
+def fill_placeholders(value, fills):
+    if isinstance(value, str):
+        for key, text in fills.items():
+            if text:
+                value = value.replace("{%s}" % key, text)
+        return value
+    if isinstance(value, list):
+        return [fill_placeholders(v, fills) for v in value]
+    if isinstance(value, dict):
+        return {k: fill_placeholders(v, fills) for k, v in value.items()}
+    return value
+
+
+def unfilled_placeholders(value):
+    return sorted(set(re.findall(r"\{([A-Z_]+)\}", json.dumps(value, ensure_ascii=False))))
+
+
+def comparable_message(msg):
+    def embed(e):
+        return {
+            "title": (e.get("title") or "").strip(),
+            "description": (e.get("description") or "").strip(),
+            "url": e.get("url") or "",
+            "color": e.get("color") or 0,
+            "fields": [((f.get("name") or "").strip(), (f.get("value") or "").strip(), bool(f.get("inline")))
+                       for f in e.get("fields") or []],
+            "footer": ((e.get("footer") or {}).get("text") or "").strip(),
+            "thumbnail": (e.get("thumbnail") or {}).get("url") or "",
+            "image": (e.get("image") or {}).get("url") or "",
+            "author": ((e.get("author") or {}).get("name") or "").strip(),
+        }
+    return ((msg.get("content") or "").strip(), [embed(e) for e in msg.get("embeds") or []])
 
 
 def label(ch):
@@ -565,6 +608,48 @@ def main():
                 change("hide the 'Wave to say hi' button on join messages")
         if body and apply and not sid.startswith("new:"):
             api.call("PATCH", "/guilds/%s" % gid, body)
+
+    # ------------------------------------------------------------ messages (embeds) from messages.json
+    msg_path = os.path.join(os.path.dirname(os.path.abspath(args.layout)), "messages.json")
+    if os.path.exists(msg_path):
+        print("\nMessages")
+        with open(msg_path, encoding="utf-8") as fh:
+            msg_layout = json.load(fh)
+        fills = msg_layout.get("placeholders", {})
+        state.setdefault("messages", {})
+        for ch_name, posts in msg_layout.get("channels", {}).items():
+            cid = name_to_id.get(ch_name)
+            if cid is None:
+                warnings.append("messages.json has posts for %r, which isn't a channel in the layout." % ch_name)
+                continue
+            if cid.startswith("new:"):
+                change("post %d message(s) in %s" % (len(posts), ch_name))
+                continue
+            ids = list(state["messages"].get(ch_name, []))
+            kept = []
+            for i, post in enumerate(posts):
+                body = {"content": post.get("content", ""), "embeds": post.get("embeds", [])}
+                body = fill_placeholders(body, fills)
+                mid = ids[i] if i < len(ids) else None
+                missing = unfilled_placeholders(body)
+                if missing:
+                    warnings.append("Skipped message %d in %s until you fill in %s in messages.json."
+                                    % (i + 1, ch_name, ", ".join(missing)))
+                    kept.append(mid)
+                    continue
+                live = api.get_or_none("/channels/%s/messages/%s" % (cid, mid)) if mid else None
+                if live is None:
+                    change("post message %d in %s" % (i + 1, ch_name))
+                    if apply:
+                        body["allowed_mentions"] = {"parse": []}
+                        mid = api.call("POST", "/channels/%s/messages" % cid, body)["id"]
+                elif comparable_message(live) != comparable_message(body):
+                    change("update message %d in %s" % (i + 1, ch_name))
+                    if apply:
+                        body["allowed_mentions"] = {"parse": []}
+                        api.call("PATCH", "/channels/%s/messages/%s" % (cid, mid), body)
+                kept.append(mid)
+            state["messages"][ch_name] = kept
 
     # ------------------------------------------------------------ report
     known = set(order) | {gid, bot_role["id"]}
