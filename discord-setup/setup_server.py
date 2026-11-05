@@ -269,6 +269,7 @@ def main():
                          and (r.get("tags") or {}).get("bot_id")), key=rank, reverse=True)
     has_bots_slot = any(spec["name"] == "@bots" for spec in layout["roles"])
     role_ids = {"@everyone": gid, "@bot": bot_role["id"], "@bots": [r["id"] for r in other_bots]}
+    role_ids.update({r["name"]: r["id"] for r in other_bots})   # lets overwrites name one bot, e.g. "Ticket Tool"
     claimed_roles = set()
     order = []          # layout roles top -> bottom (ids, "new:..." in a dry run)
     blocked = []        # existing roles the bot can't touch because they're above it

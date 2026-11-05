@@ -332,7 +332,7 @@
         "Administrator": {
           "allow": ["@post"]
         },
-        "@bots": {
+        "Ticket Tool": {
           "allow": ["VIEW_CHANNEL", "@post", "MANAGE_CHANNELS"]
         }
       },
@@ -358,7 +358,7 @@
         "Administrator": {
           "allow": ["VIEW_CHANNEL", "@post"]
         },
-        "@bots": {
+        "Ticket Tool": {
           "allow": ["VIEW_CHANNEL", "@post", "MANAGE_CHANNELS", "MANAGE_ROLES", "MANAGE_MESSAGES"]
         }
       },
@@ -505,7 +505,7 @@
           "type": "text",
           "topic": "Carl-bot logs moderation actions here.",
           "overwrites": {
-            "@bots": {
+            "carl-bot": {
               "allow": ["VIEW_CHANNEL", "@post"]
             }
           }
@@ -516,7 +516,7 @@
           "type": "text",
           "topic": "Ticket Tool saves closed tickets here.",
           "overwrites": {
-            "@bots": {
+            "Ticket Tool": {
               "allow": ["VIEW_CHANNEL", "@post"]
             }
           }
