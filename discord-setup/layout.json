@@ -1,0 +1,154 @@
+{
+  "guild_id": "1567819226969014302",
+  "audit_log_reason": "Server setup script (discord-setup/layout.json)",
+
+  "permission_presets": {
+    "member": [
+      "VIEW_CHANNEL", "SEND_MESSAGES", "READ_MESSAGE_HISTORY", "ADD_REACTIONS",
+      "EMBED_LINKS", "ATTACH_FILES", "USE_EXTERNAL_EMOJIS", "USE_EXTERNAL_STICKERS",
+      "CREATE_PUBLIC_THREADS", "SEND_MESSAGES_IN_THREADS", "SEND_VOICE_MESSAGES",
+      "CREATE_INSTANT_INVITE", "USE_APPLICATION_COMMANDS", "USE_EXTERNAL_APPS",
+      "USE_EMBEDDED_ACTIVITIES", "CONNECT", "SPEAK", "STREAM", "USE_VAD", "USE_SOUNDBOARD"
+    ],
+    "moderator": [
+      "@member", "KICK_MEMBERS", "MODERATE_MEMBERS", "MANAGE_MESSAGES", "MANAGE_THREADS",
+      "PIN_MESSAGES", "MANAGE_NICKNAMES", "CHANGE_NICKNAME", "VIEW_AUDIT_LOG",
+      "MUTE_MEMBERS", "DEAFEN_MEMBERS", "MOVE_MEMBERS", "BYPASS_SLOWMODE",
+      "CREATE_PRIVATE_THREADS", "CREATE_EVENTS", "SEND_POLLS"
+    ],
+    "post": [
+      "SEND_MESSAGES", "EMBED_LINKS", "ATTACH_FILES", "CREATE_PUBLIC_THREADS",
+      "SEND_MESSAGES_IN_THREADS", "SEND_POLLS"
+    ],
+    "no_posting": [
+      "SEND_MESSAGES", "CREATE_PUBLIC_THREADS", "CREATE_PRIVATE_THREADS",
+      "SEND_MESSAGES_IN_THREADS", "SEND_POLLS"
+    ]
+  },
+
+  "roles": [
+    { "name": "Creator",         "keep": true },
+    { "name": "Administrator",   "keep": true },
+    { "name": "Moderator",       "color": "#E67E22", "hoist": true,  "mentionable": true,  "permissions": ["@moderator"] },
+    { "name": "Developer",       "color": "#9B59B6", "hoist": true,  "mentionable": false, "permissions": ["@member"] },
+    { "name": "Content Creator", "color": "#F47FFF", "hoist": true,  "mentionable": false, "permissions": ["@member"] },
+    { "name": "Tester",          "color": "#1ABC9C", "hoist": true,  "mentionable": false, "permissions": ["@member"] },
+    { "name": "Player",          "keep": true },
+    { "name": "Update Ping",     "color": null,      "hoist": false, "mentionable": false, "permissions": [] },
+    { "name": "Event Ping",      "color": null,      "hoist": false, "mentionable": false, "permissions": [] },
+    { "name": "Giveaway Ping",   "color": null,      "hoist": false, "mentionable": false, "permissions": [] }
+  ],
+
+  "categories": [
+    {
+      "name": "📌 INFORMATION",
+      "overwrites": {
+        "@everyone":     { "deny":  ["@no_posting"] },
+        "Administrator": { "allow": ["@post", "MENTION_EVERYONE"] }
+      },
+      "channels": [
+        { "name": "👋・welcome",       "type": "text",         "topic": "Welcome to Untitled Isekai! Read the rules, then jump into the game." },
+        { "name": "📜・rules",         "type": "text",         "match": ["rules"] },
+        { "name": "📢・announcements", "type": "announcement", "topic": "Important server and game news." },
+        { "name": "🎮・game-updates",  "type": "announcement", "topic": "Patch notes, new worlds, new skills and balance changes." },
+        { "name": "🔗・links",         "type": "text",         "topic": "Game link, Roblox group and socials." },
+        { "name": "🎉・events",        "type": "text",         "topic": "Upcoming in-game and server events.",
+          "overwrites": { "Moderator": { "allow": ["@post", "MENTION_EVERYONE"] } } },
+        { "name": "🎁・giveaways",     "type": "text",         "topic": "Giveaways and rewards.",
+          "overwrites": { "Moderator": { "allow": ["@post", "MENTION_EVERYONE"] } } }
+      ]
+    },
+    {
+      "name": "💬 COMMUNITY",
+      "match": ["Text Channels"],
+      "channels": [
+        { "name": "💬・general",       "type": "text", "match": ["general"] },
+        { "name": "🖼️・media",         "type": "text", "topic": "Screenshots, clips and art." },
+        { "name": "😂・memes",         "type": "text", "topic": "Isekai and game memes." },
+        { "name": "🎥・content-share", "type": "text", "topic": "Videos and streams from our Content Creators.",
+          "overwrites": {
+            "@everyone":       { "deny":  ["SEND_MESSAGES"] },
+            "Content Creator": { "allow": ["SEND_MESSAGES", "EMBED_LINKS", "ATTACH_FILES"] },
+            "Administrator":   { "allow": ["SEND_MESSAGES", "EMBED_LINKS", "ATTACH_FILES"] }
+          } }
+      ]
+    },
+    {
+      "name": "⚔️ GAME",
+      "channels": [
+        { "name": "❓・game-help",    "type": "text",  "topic": "Questions about the game? Ask here." },
+        { "name": "💡・suggestions",  "type": "forum", "topic": "One idea per post. Search first so we don't get duplicates.",
+          "tags": [
+            { "name": "Idea",     "emoji": "💡" },
+            { "name": "Planned",  "emoji": "📅", "moderated": true },
+            { "name": "Accepted", "emoji": "✅", "moderated": true },
+            { "name": "Denied",   "emoji": "❌", "moderated": true }
+          ] },
+        { "name": "🐛・bug-reports",  "type": "forum", "topic": "One bug per post: what happened, how to make it happen again, and a screenshot or clip.",
+          "tags": [
+            { "name": "Bug",             "emoji": "🐛" },
+            { "name": "Known Issue",     "emoji": "📌", "moderated": true },
+            { "name": "Fixed",           "emoji": "✅", "moderated": true },
+            { "name": "Can't Reproduce", "emoji": "❔", "moderated": true }
+          ] },
+        { "name": "🤝・trading",      "type": "text",  "topic": "Trade items and gear. Scamming = ban.", "slowmode": 30 },
+        { "name": "⚔️・party-finder", "type": "text",  "topic": "Looking for a party? Post your level and what you're doing.", "slowmode": 10 },
+        { "name": "🏆・showcase",     "type": "text",  "topic": "Show off your characters, builds and loot." }
+      ]
+    },
+    {
+      "name": "🔊 VOICE",
+      "match": ["Voice Channels"],
+      "channels": [
+        { "name": "🔊 General", "type": "voice", "match": ["General"] },
+        { "name": "⚔️ Party 1", "type": "voice", "user_limit": 4 },
+        { "name": "⚔️ Party 2", "type": "voice", "user_limit": 4 }
+      ]
+    },
+    {
+      "name": "🧪 TESTING",
+      "overwrites": {
+        "@everyone":     { "deny":  ["VIEW_CHANNEL"] },
+        "Tester":        { "allow": ["VIEW_CHANNEL"] },
+        "Developer":     { "allow": ["VIEW_CHANNEL"] },
+        "Administrator": { "allow": ["VIEW_CHANNEL"] },
+        "@bot":          { "allow": ["VIEW_CHANNEL"] }
+      },
+      "channels": [
+        { "name": "🧪・beta-testing",  "type": "text", "topic": "Try new updates before they go live." },
+        { "name": "📝・test-feedback", "type": "text", "topic": "Bugs and feedback from testing." }
+      ]
+    },
+    {
+      "name": "🛠️ DEVELOPMENT",
+      "overwrites": {
+        "@everyone":     { "deny":  ["VIEW_CHANNEL"] },
+        "Developer":     { "allow": ["VIEW_CHANNEL", "PIN_MESSAGES"] },
+        "Administrator": { "allow": ["VIEW_CHANNEL"] },
+        "@bot":          { "allow": ["VIEW_CHANNEL"] }
+      },
+      "channels": [
+        { "name": "💻・dev-chat",  "type": "text",  "topic": "Scripting, building and game development." },
+        { "name": "💡・dev-ideas", "type": "text",  "topic": "Plans and ideas for future updates." },
+        { "name": "🛠️ Dev Voice",  "type": "voice" }
+      ]
+    },
+    {
+      "name": "🛡️ STAFF",
+      "overwrites": {
+        "@everyone":     { "deny":  ["VIEW_CHANNEL"] },
+        "Moderator":     { "allow": ["VIEW_CHANNEL"] },
+        "Administrator": { "allow": ["VIEW_CHANNEL"] },
+        "@bot":          { "allow": ["VIEW_CHANNEL"] }
+      },
+      "channels": [
+        { "name": "🛡️・staff-chat",     "type": "text", "topic": "Staff discussion." },
+        { "name": "🔒・moderator-only", "type": "text", "match": ["moderator-only"] },
+        { "name": "📋・mod-logs",       "type": "text", "topic": "Moderation actions and reports." },
+        { "name": "🛡️ Staff Voice",     "type": "voice" }
+      ]
+    }
+  ],
+
+  "system_channel": "👋・welcome"
+}
