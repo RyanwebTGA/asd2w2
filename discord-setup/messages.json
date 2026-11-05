@@ -1,0 +1,109 @@
+{
+  "placeholders": {
+    "GAME_LINK": "",
+    "GROUP_LINK": ""
+  },
+  "channels": {
+    "「👋」welcome": [
+      {
+        "embeds": [
+          {
+            "title": "👋 Welcome to Untitled Isekai",
+            "color": 7101671,
+            "thumbnail": {
+              "url": "https://cdn.discordapp.com/icons/1567819226969014302/f22f2b48dbb34f93f1afe9ba1b13a23b.png?size=256"
+            },
+            "footer": {
+              "text": "Untitled Isekai • Welcome"
+            },
+            "description": "You've been summoned to another world. This is the official community for **Untitled Isekai**, an anime isekai game on Roblox.\n\n**Get started**\n**1.** Read <#1567872624959426662>\n**2.** Type `/verify` in <#1567936061420605563> to link your Roblox account\n**3.** Pick your pings in <#1567934342813188209>\n\n**Once you're verified**\n**Play** — <#1567932466285781062>\n**News** — <#1567932463303360656> <#1567932464738074698>\n**Events** — <#1567932467707646072> <#1567932469108412466>\n**Chat** — <#1567819227824394354> <#1567932472031715339>\n**Feedback** — <#1567932477765320876> <#1567932478935801878>\n**Support** — <#1567934346353188955>"
+          }
+        ]
+      }
+    ],
+    "「📜」rules": [
+      {
+        "embeds": [
+          {
+            "title": "📜 Server rules",
+            "color": 7101671,
+            "footer": {
+              "text": "Untitled Isekai • Rules"
+            },
+            "description": "Every guild has rules. Here are ours.\n\n**1. Be respectful.** Treat everyone kindly. Banter is fine, toxicity isn't.\n**2. No harassment or hate.** No bullying, threats, slurs or discrimination.\n**3. Keep it SFW.** No NSFW or gore, including names, avatars and profiles.\n**4. No spam or self-promo.** No ads, DM advertising or mass pings. Content Creators post in <#1567932474317865041>.\n**5. No scams.** No fake trades, fake links or pretending to be staff.\n**6. No exploits or cheats.** Don't use, share or sell them. Found one? Report it in a ticket.\n**7. No begging.** Don't ask for free Robux, items or roles.\n**8. Stay on-topic.** Use the right channel for the right thing.\n**9. Follow the ToS.** [Discord's](https://discord.com/terms) and [Roblox's](https://www.roblox.com/info/terms) terms apply here.\n**10. Staff have the final say.** Disagree? Appeal in <#1567934346353188955>, not in chat.\n\n**If you break a rule**\nWarn → Timeout → Kick → Ban\nSerious cases can skip straight to a ban."
+          }
+        ]
+      }
+    ],
+    "「✅」verify": [
+      {
+        "embeds": [
+          {
+            "title": "✅ Verify your account",
+            "color": 7101671,
+            "footer": {
+              "text": "Untitled Isekai • Verification"
+            },
+            "description": "Link your Roblox account to unlock the rest of the server.\n\n**How it works**\n**1.** Type `/verify` in this channel\n**2.** Follow Bloxlink's steps\n**3.** You get the <@&1567820274752290977> role and the server unlocks\n\n**Stay safe**\nOnly verify through **blox.link**. Never share your password or 2FA codes. Staff will never ask for them.\n\n**Stuck?**\nPost here and staff will help you."
+          }
+        ]
+      }
+    ],
+    "「🎭」self-roles": [
+      {
+        "embeds": [
+          {
+            "title": "🎭 Pick your pings",
+            "color": 7101671,
+            "footer": {
+              "text": "Untitled Isekai • Self-roles"
+            },
+            "description": "React below to choose what you get pinged for.\n\n📢 <@&1567931843842408488> — game updates and news\n🎉 <@&1567931845025333320> — in-game and server events\n🎁 <@&1567931846732546109> — giveaways and rewards\n\nRemove your reaction to drop the role."
+          }
+        ]
+      }
+    ],
+    "「🔗」links": [
+      {
+        "embeds": [
+          {
+            "title": "🔗 Official links",
+            "color": 7101671,
+            "footer": {
+              "text": "Untitled Isekai • Links"
+            },
+            "description": "**Play the game**\n[Play Untitled Isekai on Roblox]({GAME_LINK})\nLike and favourite it to help the game grow.\n\n**Roblox group**\n[Join our Roblox group]({GROUP_LINK})\n\n**Invite friends**\nEvery hero needs a party. Tap the server name, then **Invite**.\n\nOnly trust game and group links from this channel."
+          }
+        ]
+      }
+    ],
+    "「📩」open-a-ticket": [
+      {
+        "embeds": [
+          {
+            "title": "🎫 Open a ticket",
+            "color": 7101671,
+            "footer": {
+              "text": "Untitled Isekai • Support"
+            },
+            "description": "Need staff? Use the button below to open a private ticket. Only you and staff can see it.\n\n**Open a ticket to**\n• Report a scammer or rule-breaker\n• Report an exploit or game-breaking bug\n• Appeal a staff decision\n• Ask staff something privately\n\nEveryday bugs go in <#1567932478935801878>. Joke or empty tickets will be closed."
+          }
+        ]
+      }
+    ],
+    "「🛡️」staff-chat": [
+      {
+        "embeds": [
+          {
+            "title": "🛡️ Staff guide",
+            "color": 7101671,
+            "footer": {
+              "text": "Untitled Isekai • Staff"
+            },
+            "description": "How we moderate: fair, calm and consistent.\n\n**Handling a report**\n**1.** Collect proof: screenshots, message links, user IDs\n**2.** Keep it in the ticket, not in public chat\n**3.** Act with Carl-bot commands so it's logged in <#1567932504873242694>\n**4.** Close the ticket. The transcript saves to <#1567936077732257964>\n\n**Punishment ladder**\nWarn → Timeout → Kick → Ban\nScams, hate, NSFW and exploits can skip steps.\n\n**Who can do what**\n<@&1567931837899088012> — warn, timeout, kick\n<@&1567845695023747142> — bans and appeals\n<@&1567819590753591367> — final say\nNeed a ban? Post the user, reason and proof here and ping an Administrator.\n\n**Stay consistent**\n• Same rule, same response, for everyone\n• Don't handle cases about yourself or close friends\n• Never share tickets or logs outside staff\n• Unsure? Ask here before acting"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -98,7 +98,7 @@
           "name": "「👋」welcome",
           "match": ["👋・welcome"],
           "type": "text",
-          "topic": "Welcome to Untitled Isekai! Read the rules, then verify in #verify to unlock the server.",
+          "topic": "Welcome, traveller. Read <#1567872624959426662>, then type `/verify` to unlock the server.",
           "overwrites": {
             "@everyone": {
               "allow": ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY"]
@@ -113,14 +113,15 @@
             "@everyone": {
               "allow": ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY"]
             }
-          }
+          },
+          "topic": "Server rules. Read them before you chat."
         },
         {
           "name": "「✅」verify",
           "match": ["✅・verify"],
           "type": "text",
           "slowmode": 15,
-          "topic": "New here? Type /verify and follow Bloxlink's steps to link your Roblox account. You'll get the Player role and the rest of the server unlocks.",
+          "topic": "Type `/verify` to link your Roblox account and unlock the server.",
           "overwrites": {
             "@everyone": {
               "allow": ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY", "SEND_MESSAGES", "USE_APPLICATION_COMMANDS"]
@@ -140,7 +141,7 @@
           "name": "「🎭」self-roles",
           "match": ["🎭・self-roles", "🎭・get-roles"],
           "type": "text",
-          "topic": "Pick roles to get pinged for updates, events and giveaways.",
+          "topic": "React to get pinged for updates, events or giveaways.",
           "overwrites": {
             "@everyone": {
               "deny": ["ADD_REACTIONS"]
@@ -209,7 +210,7 @@
           "name": "「🔗」links",
           "match": ["🔗・links"],
           "type": "text",
-          "topic": "Game link, Roblox group and socials."
+          "topic": "Official game and Roblox group links."
         }
       ]
     },
@@ -220,7 +221,8 @@
         {
           "name": "「💬」general",
           "match": ["💬・general", "general"],
-          "type": "text"
+          "type": "text",
+          "topic": "Main chat. Keep it friendly."
         },
         {
           "name": "「🖼️」media",
@@ -248,8 +250,8 @@
       ]
     },
     {
-      "name": "「Game」",
-      "match": ["⚔️ GAME"],
+      "name": "「Feedback」",
+      "match": ["「Game」", "⚔️ GAME"],
       "channels": [
         {
           "name": "「💡」suggestions",
@@ -287,7 +289,7 @@
           "name": "「🐛」bug-reports",
           "match": ["🐛・bug-reports"],
           "type": "forum",
-          "topic": "One bug per post: what happened, how to make it happen again, and a screenshot or clip.",
+          "topic": "One bug per post: what happened, how to repeat it, and a clip or screenshot.",
           "overwrites": {
             "Developer": {
               "allow": ["MANAGE_THREADS"]
@@ -339,7 +341,7 @@
           "name": "「📩」open-a-ticket",
           "match": ["🎫・open-a-ticket"],
           "type": "text",
-          "topic": "Need staff? Click the button below to open a private ticket."
+          "topic": "Need staff? Use the button below to open a private ticket."
         }
       ]
     },
@@ -492,15 +494,16 @@
           "topic": "Staff discussion."
         },
         {
-          "name": "「🔒」moderator-only",
-          "match": ["🔒・moderator-only", "moderator-only"],
-          "type": "text"
+          "name": "「📨」discord-updates",
+          "match": ["「🔒」moderator-only", "🔒・moderator-only", "moderator-only"],
+          "type": "text",
+          "topic": "Discord posts Community updates here."
         },
         {
           "name": "「📋」mod-logs",
           "match": ["📋・mod-logs"],
           "type": "text",
-          "topic": "Moderation actions and reports.",
+          "topic": "Carl-bot logs moderation actions here.",
           "overwrites": {
             "@bots": {
               "allow": ["VIEW_CHANNEL", "@post"]
