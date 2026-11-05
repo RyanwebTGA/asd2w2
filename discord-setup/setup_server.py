@@ -347,6 +347,30 @@ def main():
             if sorted(order, key=lambda rid: rank(live[rid]), reverse=True) != order:
                 warnings.append("Discord didn't keep the role order exactly; run the script again to retry.")
 
+    # @everyone's server-wide permissions (e.g. no View Channel = verification gate)
+    if "everyone_permissions" in layout:
+        everyone = next(r for r in roles if r["id"] == gid)
+        want = str(resolve_perms(layout["everyone_permissions"], presets))
+        if everyone["permissions"] != want:
+            removed = perm_names(int(everyone["permissions"]) & ~int(want))
+            added = perm_names(int(want) & ~int(everyone["permissions"]))
+            change("update @everyone permissions (%s)" % ", ".join(
+                ["-" + n for n in removed] + ["+" + n for n in added]))
+            if apply:
+                api.call("PATCH", "/guilds/%s/roles/%s" % (gid, gid), {"permissions": want})
+
+    # other bots' own roles: give each only the permissions it needs
+    for bot_name, perms in layout.get("bot_role_permissions", {}).items():
+        match = next((r for r in other_bots if norm(r["name"]) == norm(bot_name)), None)
+        if match is None:
+            warnings.append("Bot role %r isn't on the server (is the bot added?)." % bot_name)
+            continue
+        want = str(resolve_perms(perms, presets))
+        if match["permissions"] != want:
+            change("set %s's permissions to: %s" % (match["name"], ", ".join(perm_names(int(want)))))
+            if apply:
+                api.call("PATCH", "/guilds/%s/roles/%s" % (gid, match["id"]), {"permissions": want})
+
     # ------------------------------------------------------------ channels
     print("\nChannels")
     claimed = set()
