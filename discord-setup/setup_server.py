@@ -181,6 +181,15 @@ def main():
 
     apply = args.apply
     api = Discord(token, layout.get("audit_log_reason"))
+    # IDs of everything the script manages, so renames made in Discord don't cause duplicates
+    state_path = os.path.join(os.path.dirname(os.path.abspath(args.layout)), "state.json")
+    try:
+        with open(state_path, encoding="utf-8") as fh:
+            state = json.load(fh)
+    except (OSError, ValueError):
+        state = {}
+    state.setdefault("roles", {})
+    state.setdefault("channels", {})
     gid = layout["guild_id"]
     presets = layout.get("permission_presets", {})
     changes = []
@@ -233,11 +242,20 @@ def main():
     if has_bots_slot:
         blocked += [r["name"] for r in other_bots if rank(r) >= rank(bot_top)]
     found_roles = []
+    renamed_roles = set()
     for spec in layout["roles"]:
         if spec["name"] == "@bots":
             found_roles.append(None)
             continue
         found = find_role([spec["name"]] + spec.get("match", []))
+        if not found:
+            known = next((r for r in roles if r["id"] == state["roles"].get(spec["name"])
+                          and r["id"] not in claimed_roles and not r["managed"]), None)
+            if known:
+                found = known
+                renamed_roles.add(known["id"])
+                warnings.append("Role %r was renamed in Discord to %r; keeping that name. Change it in "
+                                "layout.json to match." % (spec["name"], known["name"]))
         if found:
             claimed_roles.add(found["id"])
             if rank(found) >= rank(bot_top):
@@ -260,6 +278,7 @@ def main():
             if not found:
                 sys.exit("Role %r is marked keep but doesn't exist on the server." % name)
             role_ids[name] = found["id"]
+            state["roles"][name] = found["id"]
             order.append(found["id"])
             continue
         want = {
@@ -283,7 +302,7 @@ def main():
         else:
             rid = found["id"]
             diff, notes = {}, []
-            if found["name"] != name:
+            if found["name"] != name and found["id"] not in renamed_roles:
                 diff["name"] = name
                 notes.append("rename from %s" % found["name"])
             if found["permissions"] != want["permissions"]:
@@ -301,6 +320,8 @@ def main():
                 if apply:
                     api.call("PATCH", "/guilds/%s/roles/%s" % (gid, rid), diff)
         role_ids[name] = rid
+        if not rid.startswith("new:"):
+            state["roles"][name] = rid
         order.append(rid)
 
     if apply:
@@ -421,6 +442,14 @@ def main():
     def ensure(spec, ctype, parent_id, want_ow, where):
         name = spec["name"]
         found = find_channel([name] + spec.get("match", []), ctype)
+        renamed = False
+        if not found:
+            known = next((c for c in channels if c["id"] == state["channels"].get(name)
+                          and c["id"] not in claimed and c["type"] in SPEC_MATCHES[ctype]), None)
+            if known:
+                found, renamed = known, True
+                warnings.append("%s was renamed in Discord to %s; keeping that name. Change it in "
+                                "layout.json to match." % (name, label(known)))
         tags = [{"name": t["name"], "moderated": bool(t.get("moderated")), "emoji_name": t.get("emoji")}
                 for t in spec.get("tags", [])]
         if not found:
@@ -441,11 +470,13 @@ def main():
                 created = api.call("POST", "/guilds/%s/channels" % gid, body)
                 channels.append(created)
                 claimed.add(created["id"])
+                state["channels"][name] = created["id"]
                 return created["id"]
             return "new:" + name
         claimed.add(found["id"])
+        state["channels"][name] = found["id"]
         diff, notes = {}, []
-        if norm(found["name"], found["type"]) != norm(name, found["type"]):
+        if not renamed and norm(found["name"], found["type"]) != norm(name, found["type"]):
             diff["name"] = name
             notes.append("rename to %s" % name)
         if found["type"] != ctype:
@@ -548,6 +579,11 @@ def main():
                         "bot's role, or it can't see them on the next run.")
     for w in warnings:
         print("\nWARNING: " + w)
+
+    if apply:
+        with open(state_path, "w", encoding="utf-8") as fh:
+            json.dump(state, fh, indent=2, ensure_ascii=False)
+            fh.write("\n")
 
     if not changes:
         print("\nEverything already matches the layout. Nothing to change.")

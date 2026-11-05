@@ -76,7 +76,7 @@
             "Moderator":     { "allow": ["VIEW_CHANNEL"] },
             "Administrator": { "allow": ["VIEW_CHANNEL"] }
           } },
-        { "name": "🎭・get-roles",     "type": "text",         "topic": "Pick roles to get pinged for updates, events and giveaways." },
+        { "name": "🎭・self-roles",    "type": "text",         "match": ["🎭・get-roles"], "topic": "Pick roles to get pinged for updates, events and giveaways." },
         { "name": "📢・announcements", "type": "announcement", "topic": "Important server and game news." },
         { "name": "🎮・game-updates",  "type": "announcement", "topic": "Patch notes, new worlds, new skills and balance changes.",
           "overwrites": { "Developer": { "allow": ["@post", "MENTION_EVERYONE"] } } },
