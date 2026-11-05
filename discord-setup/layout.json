@@ -38,6 +38,10 @@
     "Bloxlink": [
       "VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS", "ATTACH_FILES", "READ_MESSAGE_HISTORY",
       "ADD_REACTIONS", "USE_EXTERNAL_EMOJIS", "MANAGE_ROLES", "MANAGE_NICKNAMES"
+    ],
+    "Reaction Roles": [
+      "VIEW_CHANNEL", "SEND_MESSAGES", "EMBED_LINKS", "READ_MESSAGE_HISTORY",
+      "ADD_REACTIONS", "USE_EXTERNAL_EMOJIS", "MANAGE_MESSAGES", "MANAGE_ROLES"
     ]
   },
 
@@ -76,7 +80,11 @@
             "Moderator":     { "allow": ["VIEW_CHANNEL"] },
             "Administrator": { "allow": ["VIEW_CHANNEL"] }
           } },
-        { "name": "🎭・self-roles",    "type": "text",         "match": ["🎭・get-roles"], "topic": "Pick roles to get pinged for updates, events and giveaways." },
+        { "name": "🎭・self-roles",    "type": "text",         "match": ["🎭・get-roles"], "topic": "Pick roles to get pinged for updates, events and giveaways.",
+          "overwrites": {
+            "@everyone": { "deny":  ["ADD_REACTIONS"] },
+            "@bots":     { "allow": ["ADD_REACTIONS"] }
+          } },
         { "name": "📢・announcements", "type": "announcement", "topic": "Important server and game news." },
         { "name": "🎮・game-updates",  "type": "announcement", "topic": "Patch notes, new worlds, new skills and balance changes.",
           "overwrites": { "Developer": { "allow": ["@post", "MENTION_EVERYONE"] } } },
