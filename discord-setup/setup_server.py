@@ -666,6 +666,12 @@ def main():
         print("\nWARNING: " + w)
 
     if apply:
+        # only remember things that are still in the layout
+        layout_channels = {c["name"] for c in layout["categories"]}
+        layout_channels |= {ch["name"] for c in layout["categories"] for ch in c["channels"]}
+        state["channels"] = {k: v for k, v in state["channels"].items() if k in layout_channels}
+        state["roles"] = {k: v for k, v in state["roles"].items()
+                          if k in {r["name"] for r in layout["roles"]}}
         with open(state_path, "w", encoding="utf-8") as fh:
             json.dump(state, fh, indent=2, ensure_ascii=False)
             fh.write("\n")
